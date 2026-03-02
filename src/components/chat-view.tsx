@@ -463,6 +463,7 @@ function ChatPanel({
   onKeySaved,
   isPostOnboarding,
   onClearPostOnboarding,
+  agentSessions,
 }: {
   agentId: string;
   agentName: string;
@@ -475,6 +476,13 @@ function ChatPanel({
   onKeySaved: () => void;
   isPostOnboarding: boolean;
   onClearPostOnboarding: () => void;
+  agentSessions: Array<{
+    key: string;
+    updatedAt: number;
+    ageMs: number;
+    totalTokens: number;
+    model: string;
+  }>;
 }) {
   const timeFormat = useSyncExternalStore(
     subscribeTimeFormatPreference,
@@ -1274,6 +1282,15 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [agentDropdownOpen, setAgentDropdownOpen] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [sessions, setSessions] = useState<
+    Array<{
+      key: string;
+      updatedAt: number;
+      ageMs: number;
+      totalTokens: number;
+      model: string;
+    }>
+  >([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // ── Warm-up state: friendly loading for new users ──
@@ -1326,6 +1343,16 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
       .catch(() => setAgentsLoading(false));
   }, [selectedAgent]);
 
+  const fetchSessions = useCallback(() => {
+    fetch("/api/sessions")
+      .then((r) => r.json())
+      .then((data) => {
+        const list = Array.isArray(data.sessions) ? data.sessions : [];
+        setSessions(list);
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     mountedAtRef.current = Date.now();
   }, []);
@@ -1350,6 +1377,16 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
     }, ms);
     return () => clearInterval(interval);
   }, [fetchAgents, isVisible, warmingUp]);
+
+  useEffect(() => {
+    if (isVisible) void fetchSessions();
+    const interval = setInterval(() => {
+      if (isVisible && document.visibilityState === "visible") {
+        void fetchSessions();
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [fetchSessions, isVisible]);
 
   const fetchModels = useCallback(() => {
     fetch("/api/models?scope=configured", { cache: "no-store" })
@@ -1611,6 +1648,9 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
       ) : (
         Array.from(mountedAgents).map((agentId) => {
           const agent = agents.find((a) => a.id === agentId);
+          const agentSessions = sessions.filter((s) =>
+            s.key.startsWith(`agent:${agentId}:`)
+          );
           return (
             <ChatPanel
               key={agentId}
@@ -1625,6 +1665,7 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
               onKeySaved={fetchModels}
               isPostOnboarding={isPostOnboarding}
               onClearPostOnboarding={clearPostOnboarding}
+              agentSessions={agentSessions}
             />
           );
         })
