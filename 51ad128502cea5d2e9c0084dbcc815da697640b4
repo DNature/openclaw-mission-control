@@ -1,0 +1,23 @@
+src/components/chat-view.tsx
+  c88c83e15f6941a1 535,781,802,910-912,1806
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "51ad128502cea5d2e9c0084dbcc815da697640b4",
+  "prompts": {
+    "c88c83e15f6941a1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3d30b57a-fe7b-413c-9ec9-de0fd8eee56e",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Divine Hycenth <divinehycenth8@gmail.com>",
+      "messages": [],
+      "total_additions": 9,
+      "total_deletions": 3,
+      "accepted_lines": 7,
+      "overriden_lines": 0
+    }
+  }
+}
