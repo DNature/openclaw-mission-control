@@ -532,6 +532,7 @@ function ChatPanel({
   const prevMsgCountRef = useRef(0);
   const [sessionDropdownOpen, setSessionDropdownOpen] = useState(false);
   const [sessionLoading, setSessionLoading] = useState(false);
+  const [sessionError, setSessionError] = useState<string | null>(null);
   const sessionDropdownRef = useRef<HTMLDivElement>(null);
 
   // Whether the agent model is known (not the placeholder "unknown" value)
@@ -777,6 +778,7 @@ function ChatPanel({
         return;
       }
       setSessionLoading(true);
+      setSessionError(null);
       setSessionDropdownOpen(false);
       try {
         const res = await fetch(
@@ -797,6 +799,7 @@ function ChatPanel({
         prevMsgCountRef.current = msgs.length;
       } catch (err) {
         console.error("Failed to load session history:", err);
+        setSessionError("Couldn't load session history");
       } finally {
         setSessionLoading(false);
       }
@@ -903,6 +906,9 @@ function ChatPanel({
 
           {sessionLoading && (
             <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+          )}
+          {sessionError && (
+            <span className="text-xs text-red-400">{sessionError}</span>
           )}
         </div>
       )}
@@ -1795,9 +1801,9 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
       ) : (
         Array.from(mountedAgents).map((agentId) => {
           const agent = agents.find((a) => a.id === agentId);
-          const agentSessions = sessions.filter((s) =>
-            s.key.startsWith(`agent:${agentId}:`)
-          );
+          const agentSessions = sessions
+            .filter((s) => s.key.startsWith(`agent:${agentId}:`))
+            .sort((a, b) => b.updatedAt - a.updatedAt);
           return (
             <ChatPanel
               key={agentId}
