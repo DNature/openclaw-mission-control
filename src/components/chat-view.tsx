@@ -11,6 +11,7 @@ import {
 } from "react";
 import { useChat } from "@ai-sdk/react";
 import { TextStreamChatTransport } from "ai";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Send,
   User,
@@ -482,6 +483,8 @@ function ChatPanel({
   onKeySaved,
   isPostOnboarding,
   onClearPostOnboarding,
+  initialSessionKey,
+  onSessionChange,
   agentSessions,
 }: {
   agentId: string;
@@ -502,6 +505,8 @@ function ChatPanel({
     totalTokens: number;
     model: string;
   }>;
+  initialSessionKey?: string | null;
+  onSessionChange?: (sessionKey: string | null) => void;
 }) {
   const timeFormat = useSyncExternalStore(
     subscribeTimeFormatPreference,
@@ -768,8 +773,9 @@ function ChatPanel({
     setMessages([]);
     prevMsgCountRef.current = 0;
     setChatSessionKey(createChatSessionKey(agentId));
+    onSessionChange?.(null);
     setTimeout(() => inputRef.current?.focus(), 100);
-  }, [agentId, setMessages]);
+  }, [agentId, onSessionChange, setMessages]);
 
   const resumeSession = useCallback(
     async (sessionKey: string) => {
@@ -797,6 +803,7 @@ function ChatPanel({
         );
         setChatSessionKey(sessionKey);
         prevMsgCountRef.current = msgs.length;
+        onSessionChange?.(sessionKey);
       } catch (err) {
         console.error("Failed to load session history:", err);
         setSessionError("Couldn't load session history");
@@ -804,8 +811,21 @@ function ChatPanel({
         setSessionLoading(false);
       }
     },
-    [chatSessionKey, setMessages],
+    [chatSessionKey, onSessionChange, setMessages],
   );
+
+  // Auto-resume session when initialSessionKey changes (from URL deep link)
+  const lastResumedKey = useRef<string | null>(null);
+  useEffect(() => {
+    if (!initialSessionKey || initialSessionKey === lastResumedKey.current) return;
+    if (initialSessionKey === chatSessionKey) {
+      lastResumedKey.current = initialSessionKey;
+      return;
+    }
+    lastResumedKey.current = initialSessionKey;
+    void resumeSession(initialSessionKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSessionKey]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -1428,8 +1448,16 @@ function ChatPanel({
 const isHosted = process.env.NEXT_PUBLIC_AGENTBAY_HOSTED === "true";
 
 export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [agents, setAgents] = useState<Agent[]>([]);
-  const [selectedAgent, setSelectedAgent] = useState<string>("main");
+  const [selectedAgent, setSelectedAgent] = useState<string>(
+    () => searchParams.get("agent") || "main"
+  );
+  const [activeSessionKey, setActiveSessionKey] = useState<string | null>(
+    () => searchParams.get("session") || null
+  );
   const [agentsLoading, setAgentsLoading] = useState(true);
   const [availableModels, setAvailableModels] = useState<Array<{ key: string; name: string }>>([]);
   const [modelsLoaded, setModelsLoaded] = useState(false);
@@ -1465,7 +1493,7 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
 
   // Track which agents have been "opened" (we'll mount their ChatPanel forever)
   const [mountedAgents, setMountedAgents] = useState<Set<string>>(
-    new Set(["main"])
+    () => new Set(["main", selectedAgent])
   );
 
   // Fetch agents on mount (auto-discovery)
@@ -1581,23 +1609,54 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
     return () => clearInterval(id);
   }, [isVisible]);
 
+  // Sync selected agent + session to URL query params
+  const updateUrl = useCallback(
+    (agent: string, session: string | null) => {
+      const params = new URLSearchParams();
+      if (agent && agent !== "main") params.set("agent", agent);
+      if (session) params.set("session", session);
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    },
+    [pathname, router],
+  );
+
   // When user selects an agent, ensure it's in the mounted set
   const selectAgent = useCallback((agentId: string) => {
     setSelectedAgent(agentId);
+    setActiveSessionKey(null);
     setMountedAgents((prev) => {
       const next = new Set(prev);
       next.add(agentId);
       return next;
     });
     setAgentDropdownOpen(false);
-    // Clear unread for this agent since user is looking at it
     clearUnread(agentId);
-  }, []);
+    updateUrl(agentId, null);
+  }, [updateUrl]);
 
   // Mark chat as active when visible
   useEffect(() => {
     setChatActive(isVisible);
   }, [isVisible]);
+
+  // Sync agent + session from URL when chat becomes visible (handles deep links)
+  useEffect(() => {
+    if (!isVisible) return;
+    const urlAgent = searchParams.get("agent") || "main";
+    const urlSession = searchParams.get("session") || null;
+    if (urlAgent !== selectedAgent) {
+      setSelectedAgent(urlAgent);
+      setMountedAgents((prev) => {
+        const next = new Set(prev);
+        next.add(urlAgent);
+        return next;
+      });
+      clearUnread(urlAgent);
+    }
+    setActiveSessionKey(urlSession);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVisible, searchParams]);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -1819,6 +1878,11 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
               isPostOnboarding={isPostOnboarding}
               onClearPostOnboarding={clearPostOnboarding}
               agentSessions={agentSessions}
+              initialSessionKey={agentId === selectedAgent ? activeSessionKey : undefined}
+              onSessionChange={(sessionKey) => {
+                setActiveSessionKey(sessionKey);
+                updateUrl(agentId, sessionKey);
+              }}
             />
           );
         })
