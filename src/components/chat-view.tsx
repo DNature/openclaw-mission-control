@@ -772,6 +772,10 @@ function ChatPanel({
 
   const resumeSession = useCallback(
     async (sessionKey: string) => {
+      if (sessionKey === chatSessionKey) {
+        setSessionDropdownOpen(false);
+        return;
+      }
       setSessionLoading(true);
       setSessionDropdownOpen(false);
       try {
@@ -797,7 +801,7 @@ function ChatPanel({
         setSessionLoading(false);
       }
     },
-    [setMessages],
+    [chatSessionKey, setMessages],
   );
 
   const handleKeyDown = useCallback(
@@ -844,9 +848,9 @@ function ChatPanel({
               <History className="h-3 w-3" />
               <span>
                 {chatSessionKey.startsWith(`agent:${agentId}:`)
-                  ? formatRelativeTime(
-                      agentSessions.find((s) => s.key === chatSessionKey)?.ageMs
-                    ) || "Current session"
+                  ? (agentSessions.some((s) => s.key === chatSessionKey)
+                      ? formatRelativeTime(agentSessions.find((s) => s.key === chatSessionKey)?.ageMs)
+                      : "Current session")
                   : "New session"}
               </span>
               <ChevronDown className="h-3 w-3" />
