@@ -1,0 +1,23 @@
+src/app/api/chat/history/route.ts
+  c88c83e15f6941a1 1-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "d3cc5353de5fe6ffee6481142d5bd3d0f9dbc194",
+  "prompts": {
+    "c88c83e15f6941a1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3d30b57a-fe7b-413c-9ec9-de0fd8eee56e",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Divine Hycenth <divinehycenth8@gmail.com>",
+      "messages": [],
+      "total_additions": 81,
+      "total_deletions": 0,
+      "accepted_lines": 81,
+      "overriden_lines": 0
+    }
+  }
+}
