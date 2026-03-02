@@ -29,6 +29,7 @@ import {
   EyeOff,
   Check,
   Loader2,
+  History,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -75,6 +76,24 @@ function formatTime(d: Date | undefined, timeFormat: TimeFormatPreference) {
 function formatModel(model: string) {
   const parts = model.split("/");
   return parts[parts.length - 1] || model;
+}
+
+function formatRelativeTime(ageMs: number | undefined | null): string {
+  if (ageMs == null || ageMs < 0) return "just now";
+  const seconds = Math.floor(ageMs / 1000);
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+function formatTokenCount(tokens: number): string {
+  if (tokens < 1000) return `${tokens} tokens`;
+  if (tokens < 10000) return `${(tokens / 1000).toFixed(1)}k tokens`;
+  return `${Math.round(tokens / 1000)}k tokens`;
 }
 
 function possessiveLabel(name: string) {
@@ -511,6 +530,9 @@ function ChatPanel({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const modelMenuRef = useRef<HTMLDivElement>(null);
   const prevMsgCountRef = useRef(0);
+  const [sessionDropdownOpen, setSessionDropdownOpen] = useState(false);
+  const [sessionLoading, setSessionLoading] = useState(false);
+  const sessionDropdownRef = useRef<HTMLDivElement>(null);
 
   // Whether the agent model is known (not the placeholder "unknown" value)
   const agentModelKnown = agentModel.includes("/");
@@ -618,6 +640,21 @@ function ChatPanel({
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [modelMenuOpen]);
+
+  // Close session dropdown on click outside
+  useEffect(() => {
+    if (!sessionDropdownOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (
+        sessionDropdownRef.current &&
+        !sessionDropdownRef.current.contains(e.target as Node)
+      ) {
+        setSessionDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [sessionDropdownOpen]);
 
   // Create transport for chat requests. Per-request fields are attached via sendMessage.
   const transport = useMemo(
@@ -733,6 +770,36 @@ function ChatPanel({
     setTimeout(() => inputRef.current?.focus(), 100);
   }, [agentId, setMessages]);
 
+  const resumeSession = useCallback(
+    async (sessionKey: string) => {
+      setSessionLoading(true);
+      setSessionDropdownOpen(false);
+      try {
+        const res = await fetch(
+          `/api/chat/history?sessionKey=${encodeURIComponent(sessionKey)}&limit=100`,
+        );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const msgs = Array.isArray(data.messages) ? data.messages : [];
+        setMessages(
+          msgs.map((m: { id: string; role: string; content: string; createdAt?: string }) => ({
+            id: m.id,
+            role: m.role as "user" | "assistant",
+            parts: [{ type: "text" as const, text: m.content }],
+            ...(m.createdAt ? { createdAt: new Date(m.createdAt) } : {}),
+          })),
+        );
+        setChatSessionKey(sessionKey);
+        prevMsgCountRef.current = msgs.length;
+      } catch (err) {
+        console.error("Failed to load session history:", err);
+      } finally {
+        setSessionLoading(false);
+      }
+    },
+    [setMessages],
+  );
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey) {
@@ -760,6 +827,82 @@ function ChatPanel({
         !isSelected && "hidden"
       )}
     >
+      {/* Session selector toolbar */}
+      {agentSessions.length > 0 && (
+        <div className="flex items-center gap-2 border-b border-foreground/5 px-4 py-1.5">
+          <div className="relative" ref={sessionDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setSessionDropdownOpen(!sessionDropdownOpen)}
+              disabled={isLoading}
+              className={cn(
+                "flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors",
+                "text-muted-foreground hover:bg-muted hover:text-foreground",
+                isLoading && "pointer-events-none opacity-50"
+              )}
+            >
+              <History className="h-3 w-3" />
+              <span>
+                {chatSessionKey.startsWith(`agent:${agentId}:`)
+                  ? formatRelativeTime(
+                      agentSessions.find((s) => s.key === chatSessionKey)?.ageMs
+                    ) || "Current session"
+                  : "New session"}
+              </span>
+              <ChevronDown className="h-3 w-3" />
+            </button>
+
+            {sessionDropdownOpen && (
+              <div className="absolute left-0 top-full z-50 mt-1 min-w-56 overflow-hidden rounded-lg border border-foreground/10 bg-card/95 py-1 shadow-xl backdrop-blur-sm">
+                {/* New Chat option */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearChat();
+                    setSessionDropdownOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  <span className="text-emerald-400">+</span>
+                  <span>New Chat</span>
+                </button>
+
+                <div className="my-1 border-t border-foreground/5" />
+
+                {/* Session list */}
+                {agentSessions.map((session) => (
+                  <button
+                    key={session.key}
+                    type="button"
+                    onClick={() => resumeSession(session.key)}
+                    className={cn(
+                      "flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors",
+                      session.key === chatSessionKey
+                        ? "bg-violet-500/10 text-violet-300"
+                        : "text-foreground/70 hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    {session.key === chatSessionKey && (
+                      <Circle className="h-1.5 w-1.5 flex-shrink-0 fill-violet-400 text-violet-400" />
+                    )}
+                    <span className={session.key !== chatSessionKey ? "ml-3.5" : ""}>
+                      {formatRelativeTime(session.ageMs)}
+                    </span>
+                    <span className="text-muted-foreground">
+                      &bull; {formatTokenCount(session.totalTokens)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {sessionLoading && (
+            <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+          )}
+        </div>
+      )}
+
       {/* ── Messages area ───────────────────────── */}
       <div className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (
