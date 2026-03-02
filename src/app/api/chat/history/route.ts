@@ -60,22 +60,22 @@ export async function GET(request: NextRequest) {
 
     const messages = raw
       .filter((msg) => msg.role === "user" || msg.role === "assistant")
-      .map((msg, i) => {
+      .reduce<Array<{ id: string; role: "user" | "assistant"; content: string; createdAt?: string }>>((acc, msg) => {
         const text = extractText(msg);
-        if (!text) return null;
+        if (!text) return acc;
         const ts = toEpochMs(msg.timestamp);
-        return {
-          id: `history-${i}`,
+        acc.push({
+          id: `history-${acc.length}`,
           role: msg.role as "user" | "assistant",
           content: text,
           ...(ts ? { createdAt: new Date(ts).toISOString() } : {}),
-        };
-      })
-      .filter(Boolean);
+        });
+        return acc;
+      }, []);
 
     return NextResponse.json({ messages });
   } catch (err) {
     console.error("Chat history GET error:", err);
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch chat history" }, { status: 500 });
   }
 }
