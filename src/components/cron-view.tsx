@@ -735,7 +735,7 @@ function EditCronForm({
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 text-sm text-foreground/90 outline-none focus:border-violet-500/30"
+          className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
         />
       </div>
 
@@ -748,7 +748,7 @@ function EditCronForm({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={5}
-          className="w-full resize-y rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 text-xs leading-5 text-foreground/90 outline-none focus:border-violet-500/30"
+          className="w-full resize-y rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-xs leading-5 text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
         />
       </div>
 
@@ -777,7 +777,7 @@ function EditCronForm({
                 value={cronExpr}
                 onChange={(e) => setCronExpr(e.target.value)}
                 placeholder="0 8 * * *"
-                className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 font-mono text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+                className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 font-mono text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
               />
             </>
           ) : (
@@ -789,7 +789,7 @@ function EditCronForm({
                 value={everyVal}
                 onChange={(e) => setEveryVal(e.target.value)}
                 placeholder="5m, 1h, 30s"
-                className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 font-mono text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+                className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 font-mono text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
               />
             </>
           )}
@@ -802,7 +802,7 @@ function EditCronForm({
             value={tz}
             onChange={(e) => setTz(e.target.value)}
             placeholder="Europe/Warsaw"
-            className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+            className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
           />
         </div>
       </div>
@@ -861,7 +861,7 @@ function EditCronForm({
                     type="button"
                     onClick={() => fetchTargets()}
                     disabled={targetsLoading}
-                    className="shrink-0 text-xs text-violet-700 hover:text-violet-800 disabled:opacity-50 dark:text-violet-300 dark:hover:text-violet-200"
+                    className="shrink-0 text-xs text-emerald-700 hover:text-emerald-800 disabled:opacity-50 dark:text-emerald-300 dark:hover:text-emerald-200"
                   >
                     {targetsLoading ? "Refreshing…" : "Refresh targets"}
                   </button>
@@ -894,7 +894,7 @@ function EditCronForm({
                         setTo(v);
                       }
                     }}
-                    className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 font-mono text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+                    className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 font-mono text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
                   >
                     <option value="">Select recipient…</option>
                     {filteredTargets.map((t) => (
@@ -913,7 +913,7 @@ function EditCronForm({
                       value={to}
                       onChange={(e) => setTo(e.target.value)}
                       placeholder={CHANNEL_PLACEHOLDER[channel] || "channel:TARGET_ID"}
-                      className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 font-mono text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+                      className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 font-mono text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
                       aria-label="Recipient (e.g. discord:CHANNEL_ID)"
                     />
                   )}
@@ -966,7 +966,7 @@ function EditCronForm({
           value={model}
           onChange={(e) => setModel(e.target.value)}
           placeholder="e.g. minimax-portal/MiniMax-M2.5"
-          className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 font-mono text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+          className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 font-mono text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
         />
       </div>
 
@@ -1245,12 +1245,12 @@ function CreateCronForm({
   };
 
   return (
-    <div className="rounded-xl border border-violet-500/20 bg-card/90 overflow-hidden">
+    <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm dark:border-[#2c343d] dark:bg-[#171a1d]">
       {/* Wizard header */}
-      <div className="flex items-center justify-between border-b border-foreground/10 bg-violet-500/5 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-stone-200 bg-stone-50 px-4 py-3 dark:border-[#2c343d] dark:bg-[#15191d]">
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-violet-600 dark:text-violet-400" />
-          <h3 className="text-sm font-semibold text-foreground">New Cron Job</h3>
+          <Calendar className="h-4 w-4 text-stone-700 dark:text-[#d6dce3]" />
+          <h3 className="text-sm font-semibold text-stone-900 dark:text-[#f5f7fa]">New Cron Job</h3>
         </div>
         <div className="flex items-center gap-3">
           {/* Step indicator */}
@@ -1260,13 +1260,13 @@ function CreateCronForm({
                 key={i}
                 className={cn(
                   "h-1.5 rounded-full transition-all",
-                  i + 1 === step ? "w-4 bg-primary" : i + 1 < step ? "w-1.5 bg-primary/60" : "w-1.5 bg-foreground/10"
+                  i + 1 === step ? "w-4 bg-emerald-500" : i + 1 < step ? "w-1.5 bg-emerald-400/70" : "w-1.5 bg-stone-200 dark:bg-[#2c343d]"
                 )}
               />
             ))}
           </div>
-          <span className="text-xs text-muted-foreground/80">Step {step}/{totalSteps}</span>
-          <button type="button" onClick={onCancel} className="rounded p-1 text-muted-foreground/80 transition-colors hover:bg-muted hover:text-foreground/90">
+          <span className="text-xs text-stone-500 dark:text-[#a8b0ba]">Step {step}/{totalSteps}</span>
+          <button type="button" onClick={onCancel} className="rounded p-1 text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:text-[#a8b0ba] dark:hover:bg-[#20252a] dark:hover:text-[#f5f7fa]">
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
@@ -1283,7 +1283,7 @@ function CreateCronForm({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Morning Brief, Daily Sync, Weekly Report..."
-                className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2.5 text-sm text-foreground/90 outline-none focus:border-violet-500/30"
+                className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
                 autoFocus
               />
             </div>
@@ -1295,7 +1295,7 @@ function CreateCronForm({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief description of what this job does..."
-                className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+                className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
               />
             </div>
             <div>
@@ -1346,8 +1346,8 @@ function CreateCronForm({
                     className={cn(
                       "rounded-lg border px-3 py-2.5 text-left text-xs transition-colors",
                       isSelected
-                        ? "border-violet-500/40 bg-violet-500/15 text-violet-800 dark:text-violet-200"
-                        : "border-foreground/10 bg-muted/50 text-muted-foreground/80 hover:bg-muted/80 hover:text-foreground/80"
+                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                        : "border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#a8b0ba] dark:hover:bg-[#20252a] dark:hover:text-[#f5f7fa]"
                     )}
                   >
                     {scheduleOptionLabel(opt, timeFormat)}
@@ -1364,7 +1364,7 @@ function CreateCronForm({
                   type="datetime-local"
                   value={atTime}
                   onChange={(e) => setAtTime(e.target.value)}
-                  className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+                  className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
                 />
               </div>
             )}
@@ -1392,7 +1392,7 @@ function CreateCronForm({
                         value={cronExpr}
                         onChange={(e) => setCronExpr(e.target.value)}
                         placeholder="0 8 * * *"
-                        className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 font-mono text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+                        className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 font-mono text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
                       />
                     </>
                   )}
@@ -1403,7 +1403,7 @@ function CreateCronForm({
                         value={everyInterval}
                         onChange={(e) => setEveryInterval(e.target.value)}
                         placeholder="5m, 1h"
-                        className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 font-mono text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+                        className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 font-mono text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
                       />
                     </>
                   )}
@@ -1493,7 +1493,7 @@ function CreateCronForm({
                     ? "e.g. Summarize the latest news and send me a brief update..."
                     : "e.g. Time to run the daily health check."
                 }
-                className="w-full resize-y rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2.5 text-xs leading-5 text-foreground/90 outline-none focus:border-violet-500/30"
+                className="w-full resize-y rounded-lg border border-stone-200 bg-stone-50 px-3 py-2.5 text-xs leading-5 text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
                 autoFocus
               />
             </div>
@@ -1508,7 +1508,7 @@ function CreateCronForm({
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
                   placeholder="Leave blank for default model"
-                  className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 font-mono text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+                  className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 font-mono text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
                 />
               </div>
               <div>
@@ -1589,7 +1589,7 @@ function CreateCronForm({
                       type="button"
                       onClick={() => fetchTargetsCreate()}
                       disabled={targetsLoading}
-                      className="shrink-0 text-xs text-violet-700 hover:text-violet-800 disabled:opacity-50 dark:text-violet-300 dark:hover:text-violet-200"
+                      className="shrink-0 text-xs text-emerald-700 hover:text-emerald-800 disabled:opacity-50 dark:text-emerald-300 dark:hover:text-emerald-200"
                     >
                       {targetsLoading ? "Refreshing…" : "Refresh targets"}
                     </button>
@@ -1611,7 +1611,7 @@ function CreateCronForm({
                         if (v === "__custom__") setCustomTo(true);
                         else { setCustomTo(false); setTo(v); }
                       }}
-                      className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 font-mono text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+                      className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 font-mono text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
                     >
                       <option value="">Select recipient…</option>
                       {filteredTargets.map((t) => (
@@ -1630,7 +1630,7 @@ function CreateCronForm({
                             ? "Auto from last active channel"
                             : CHANNEL_PLACEHOLDER[channel] || "channel:TARGET_ID"
                         }
-                        className="w-full rounded-lg border border-foreground/10 bg-muted/80 px-3 py-2 font-mono text-xs text-foreground/90 outline-none focus:border-violet-500/30"
+                        className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 font-mono text-xs text-stone-900 outline-none focus:border-emerald-500/30 dark:border-[#2c343d] dark:bg-[#15191d] dark:text-[#f5f7fa]"
                         aria-label="Recipient (e.g. discord:CHANNEL_ID)"
                       />
                     )}
@@ -1651,7 +1651,7 @@ function CreateCronForm({
                   type="checkbox"
                   checked={bestEffort}
                   onChange={(e) => setBestEffort(e.target.checked)}
-                  className="h-3.5 w-3.5 rounded border-foreground/20 bg-muted/80 text-violet-500 focus:ring-violet-500/30"
+                  className="h-3.5 w-3.5 rounded border-foreground/20 bg-muted/80 text-emerald-600 focus:ring-emerald-500/30 dark:text-emerald-300"
                 />
                 <span className="text-xs text-muted-foreground/70">Best effort delivery (don&apos;t fail the job if delivery fails)</span>
               </label>
@@ -1718,7 +1718,7 @@ function CreateCronForm({
               {model && (
                 <div className="flex items-center justify-between px-3 py-2.5">
                   <span className="text-xs text-muted-foreground/80">Model Override</span>
-                  <span className="text-xs font-mono text-violet-700 dark:text-violet-300">{model}</span>
+                  <span className="text-xs font-mono text-emerald-700 dark:text-emerald-300">{model}</span>
                 </div>
               )}
               {/* Delivery */}
@@ -2130,7 +2130,7 @@ export function CronView() {
                   ? "border-red-500/20"
                   : "border-foreground/10",
                 hasError && expanded === job.id && "ring-1 ring-red-500/30",
-                isFocusedFromLink && "ring-1 ring-violet-500/35"
+                isFocusedFromLink && "ring-1 ring-stone-400/40 dark:ring-[#4d5864]"
               )}
             >
               {/* Job header */}
@@ -2222,7 +2222,7 @@ export function CronView() {
                     type="button"
                     onClick={() => doAction("run", job.id)}
                     disabled={actionLoading === `run-${job.id}`}
-                    className="rounded p-1.5 text-muted-foreground transition-colors hover:bg-blue-500/15 hover:text-blue-400 disabled:opacity-50"
+                    className="rounded p-1.5 text-muted-foreground transition-colors hover:bg-stone-100 hover:text-stone-900 disabled:opacity-50 dark:hover:bg-[#20252a] dark:hover:text-[#f5f7fa]"
                     title="Run now"
                   >
                     {actionLoading === `run-${job.id}` ? (
@@ -2243,7 +2243,7 @@ export function CronView() {
                     className={cn(
                       "rounded p-1.5 transition-colors",
                       isEditing
-                        ? "bg-violet-500/15 text-violet-700 dark:text-violet-300"
+                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
                         : "text-muted-foreground/80 hover:bg-muted hover:text-foreground/90"
                     )}
                     title="Edit"
@@ -2410,7 +2410,7 @@ export function CronView() {
                         <div className="flex items-center gap-2">
                           <Cpu className="h-3 w-3 text-muted-foreground/70" />
                           <span className="text-muted-foreground/85">Model</span>
-                          <span className="ml-auto font-mono text-xs text-violet-700 dark:text-violet-300">
+                          <span className="ml-auto font-mono text-xs text-emerald-700 dark:text-emerald-300">
                             {job.payload.model}
                           </span>
                         </div>

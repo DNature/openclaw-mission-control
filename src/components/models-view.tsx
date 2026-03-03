@@ -1851,7 +1851,7 @@ export function ModelsView() {
                 if (auditRequested) void fetchAudit(true);
               }}
               disabled={Boolean(busyKey)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted/50 disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 disabled:opacity-40 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 dark:hover:text-stone-100"
             >
               {busyKey || summaryLoading ? <BusyDots /> : <RefreshCw className="h-3.5 w-3.5" />}
               Refresh
@@ -1901,7 +1901,7 @@ export function ModelsView() {
           )}
 
           {/* Hero card */}
-          <div className="rounded-xl border border-[var(--accent-brand-border)] bg-gradient-to-br from-[var(--accent-brand-subtle)] to-transparent p-5">
+          <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-stone-800">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-lg font-semibold text-foreground">
@@ -1951,7 +1951,7 @@ export function ModelsView() {
                 type="button"
                 onClick={() => setPickerTarget({ kind: "default" })}
                 disabled={Boolean(busyKey)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-4 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-stone-700 disabled:opacity-40 dark:border-stone-600 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-300"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 Change Model

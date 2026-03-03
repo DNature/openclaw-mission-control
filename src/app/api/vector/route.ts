@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readdir, stat } from "fs/promises";
+import { readdir, stat, unlink } from "fs/promises";
+import { dirname, resolve } from "path";
 import { runCliJson, gatewayCall } from "@/lib/openclaw";
 import { getOpenClawHome, getDefaultWorkspace } from "@/lib/paths";
 import { buildModelsSummary } from "@/lib/models-summary";
@@ -74,6 +75,28 @@ async function getDbFileSize(dbPath: string): Promise<number> {
     return s.size;
   } catch {
     return 0;
+  }
+}
+
+async function deleteIfExists(path: string): Promise<boolean> {
+  try {
+    await unlink(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function resolveNamespaceDbPath(agentId: string): Promise<string | null> {
+  try {
+    const rows = await runCliJson<MemoryStatus[]>(["memory", "status"], 15000);
+    const match = Array.isArray(rows)
+      ? rows.find((row) => String(row.agentId || "").trim() === agentId)
+      : null;
+    const dbPath = String(match?.status?.dbPath || "").trim();
+    return dbPath || null;
+  } catch {
+    return null;
   }
 }
 
@@ -214,6 +237,56 @@ export async function POST(request: NextRequest) {
           force: force || undefined,
         });
         return NextResponse.json({ ok: true, action, output });
+      }
+
+      case "delete-namespace": {
+        const agent = String(body.agent || "").trim();
+        if (!agent) {
+          return NextResponse.json(
+            { error: "agent required" },
+            { status: 400 }
+          );
+        }
+
+        const dbPath = await resolveNamespaceDbPath(agent);
+        if (!dbPath) {
+          return NextResponse.json(
+            { error: `No memory namespace found for agent ${agent}` },
+            { status: 404 }
+          );
+        }
+
+        const resolvedDbPath = resolve(dbPath);
+        const allowedRoot = resolve(getOpenClawHome(), "memory");
+        const dbDir = dirname(resolvedDbPath);
+        if (dbDir !== allowedRoot) {
+          return NextResponse.json(
+            { error: "Refusing to delete namespace outside the OpenClaw memory directory" },
+            { status: 400 }
+          );
+        }
+
+        const deletedFiles = (
+          await Promise.all([
+            deleteIfExists(resolvedDbPath).then((ok) => (ok ? resolvedDbPath : null)),
+            deleteIfExists(`${resolvedDbPath}-wal`).then((ok) => (ok ? `${resolvedDbPath}-wal` : null)),
+            deleteIfExists(`${resolvedDbPath}-shm`).then((ok) => (ok ? `${resolvedDbPath}-shm` : null)),
+          ])
+        ).filter((value): value is string => Boolean(value));
+
+        if (deletedFiles.length === 0) {
+          return NextResponse.json(
+            { error: `Namespace files were not found for agent ${agent}` },
+            { status: 404 }
+          );
+        }
+
+        return NextResponse.json({
+          ok: true,
+          action,
+          agent,
+          deletedFiles,
+        });
       }
 
       case "setup-memory": {

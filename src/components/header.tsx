@@ -25,6 +25,7 @@ import {
   Activity,
   MessageSquare,
   Trash2,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SearchModal } from "./search-modal";
@@ -497,33 +498,33 @@ function GatewayStatusBadge({
     online: {
       dot: "bg-emerald-400",
       ping: true,
-      text: "text-emerald-500 dark:text-emerald-400",
+      text: "text-emerald-700 dark:text-emerald-400",
       label: "Online",
-      bg: "bg-emerald-500/10 border-emerald-500/20",
+      bg: "bg-emerald-100 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20",
       icon: Wifi,
     },
     degraded: {
       dot: "bg-amber-400",
       ping: false,
-      text: "text-amber-500 dark:text-amber-400",
+      text: "text-amber-700 dark:text-amber-400",
       label: "Degraded",
-      bg: "bg-amber-500/10 border-amber-500/20",
+      bg: "bg-amber-100 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/20",
       icon: Activity,
     },
     offline: {
       dot: "bg-red-400",
       ping: false,
-      text: "text-red-500 dark:text-red-400",
+      text: "text-red-700 dark:text-red-400",
       label: "Offline",
-      bg: "bg-red-500/10 border-red-500/20",
+      bg: "bg-red-100 border-red-200 dark:bg-red-500/10 dark:border-red-500/20",
       icon: WifiOff,
     },
     loading: {
       dot: "bg-zinc-400 animate-pulse",
       ping: false,
-      text: "text-muted-foreground",
+      text: "text-stone-500 dark:text-stone-400",
       label: "Checking…",
-      bg: "bg-foreground/5 border-foreground/10",
+      bg: "bg-stone-100 border-stone-200 dark:bg-stone-800 dark:border-stone-700",
       icon: Loader2,
     },
   };
@@ -669,22 +670,12 @@ export function Header() {
 
   return (
     <>
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-border bg-[var(--surface-header)] px-3 md:px-5 backdrop-blur-md shadow-sm">
-        <div className="flex items-center gap-2.5 pl-10 md:pl-0">
-          <span className="text-xs">🦞</span>
-          <h1 className="text-sm font-sans font-normal">
-            Mission Control
-            {process.env.NEXT_PUBLIC_APP_VERSION && (
-              <span className="ml-1.5 font-mono text-[11px] font-normal text-muted-foreground">
-                {process.env.NEXT_PUBLIC_APP_VERSION.startsWith("v")
-                  ? process.env.NEXT_PUBLIC_APP_VERSION
-                  : `v${process.env.NEXT_PUBLIC_APP_VERSION}`}
-              </span>
-            )}
-          </h1>
+      <header className="flex shrink-0 items-center justify-between border-b border-stone-200 bg-stone-50 px-4 py-3 md:px-8 dark:border-[#23282e] dark:bg-[#121519]">
+        <div className="flex items-center gap-2">
           <GatewayStatusBadge status={gwStatus} health={gwHealth} />
         </div>
-        <div className="flex items-center gap-1.5 md:gap-2">
+
+        <div className="flex items-center gap-2">
           {/* ── Actions ── */}
 
           {/* Ping Agent (opens persistent chat panel) */}
@@ -693,16 +684,16 @@ export function Header() {
             data-chat-toggle
             onClick={() => chatStore.toggle()}
             className={cn(
-              "relative flex h-8 items-center gap-1.5 rounded-lg border px-2 md:px-3 text-xs transition-colors",
+              "relative flex h-9 items-center gap-1.5 rounded-md border border-stone-200 bg-white px-3 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:border-[#2c343d] dark:bg-[#171a1d] dark:text-[#d6dce3] dark:hover:bg-[#20252a] dark:hover:text-[#f5f7fa]",
               chat.open
-                ? "border-border bg-muted text-foreground"
-                : "border-foreground/10 bg-card text-muted-foreground hover:bg-muted/80"
+                ? "border-stone-300 bg-stone-100 text-stone-900 dark:border-[#38414b] dark:bg-[#20252a] dark:text-[#f5f7fa]"
+                : ""
             )}
           >
             <Zap className="h-3.5 w-3.5" />
             <span className="hidden md:inline">Ping Agent</span>
             {chat.unread > 0 && !chat.open && (
-              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-xs font-bold text-primary-foreground shadow-lg">
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-stone-900 px-1 text-xs font-bold text-white shadow-lg dark:bg-stone-100 dark:text-stone-900">
                 {chat.unread}
               </span>
             )}
@@ -719,17 +710,14 @@ export function Header() {
           <button
             type="button"
             onClick={() => setSearchOpen(true)}
-            className="flex h-8 items-center gap-2 rounded-lg border border-foreground/10 bg-card px-2 md:px-3 text-xs text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground/70"
+            className="flex h-9 items-center gap-2 rounded-md border border-stone-200 bg-white px-3 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:border-[#2c343d] dark:bg-[#171a1d] dark:text-[#d6dce3] dark:hover:bg-[#20252a] dark:hover:text-[#f5f7fa]"
           >
             <Search className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Search</span>
-            <kbd className="ml-1 hidden rounded border border-foreground/10 bg-muted/70 px-1.5 py-0.5 text-xs text-muted-foreground sm:inline">
+            <kbd className="ml-1 hidden rounded bg-stone-100 px-1.5 py-0.5 text-xs text-stone-400 sm:inline dark:bg-stone-700 dark:text-stone-500">
               ⌘K
             </kbd>
           </button>
-
-          {/* ── divider ── */}
-          <div className="hidden h-5 w-px bg-foreground/10 sm:block" />
 
           {/* ── System controls ── */}
 
@@ -740,10 +728,10 @@ export function Header() {
               onClick={togglePower}
               disabled={powerBusy}
               className={cn(
-                "flex h-8 items-center gap-1.5 rounded-lg border px-2 md:px-3 text-xs font-medium transition-colors disabled:opacity-50",
+                "flex h-9 items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors disabled:opacity-50",
                 isAlive
-                  ? "border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20"
-                  : "border-emerald-500/20 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                  ? "border border-red-300 bg-red-500 text-white hover:bg-red-600"
+                  : "border border-emerald-300 bg-emerald-500 text-white hover:bg-emerald-600"
               )}
             >
               {powerBusy ? (
@@ -765,8 +753,13 @@ export function Header() {
           {/* Pairing Notifications */}
           <PairingNotifications />
 
-          {/* ── divider ── */}
-          <div className="hidden h-5 w-px bg-foreground/10 sm:block" />
+          <button
+            type="button"
+            className="flex h-9 w-9 items-center justify-center rounded-md border border-stone-200 bg-white text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-700 dark:border-[#2c343d] dark:bg-[#171a1d] dark:text-[#a8b0ba] dark:hover:bg-[#20252a] dark:hover:text-[#f5f7fa]"
+            aria-label="Notifications"
+          >
+            <Bell className="h-4 w-4" />
+          </button>
 
           {/* ── Settings ── */}
 

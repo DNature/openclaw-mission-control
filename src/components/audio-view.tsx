@@ -1531,21 +1531,21 @@ export function AudioView() {
     <SectionLayout>
       <SectionHeader
         title={
-          <span className="flex items-center gap-2 text-sm">
-            <Volume2 className="h-4 w-4 text-violet-400" />
+          <span className="inline-flex items-center gap-2">
+            <Volume2 className="h-5 w-5 text-stone-700 dark:text-stone-200" />
             Audio & Voice
           </span>
         }
         description="Text-to-speech, Talk Mode, and audio understanding configuration"
-        descriptionClassName="text-sm text-muted-foreground"
         actions={
           <div className="flex items-center gap-2">
             <ApiWarningBadge warning={apiWarning} degraded={apiDegraded} />
             <button
               onClick={fetchData}
-              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground/70"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 dark:hover:text-stone-100"
             >
               <RefreshCw className="h-4 w-4" />
+              Refresh
             </button>
           </div>
         }

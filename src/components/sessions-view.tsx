@@ -48,14 +48,14 @@ function getAgeMs(session: Session): number | null {
 
 function sessionLabel(key: string): { type: string; badge: string } {
   if (key.includes(":cron:") && key.includes(":run:"))
-    return { type: "Cron Run", badge: "bg-amber-500/15 text-amber-400" };
+    return { type: "Cron Run", badge: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300" };
   if (key.includes(":cron:"))
-    return { type: "Cron", badge: "bg-amber-500/15 text-amber-400" };
+    return { type: "Cron", badge: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300" };
   if (key.includes(":main"))
-    return { type: "Main", badge: "bg-violet-500/15 text-violet-400" };
+    return { type: "Main", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300" };
   if (key.includes(":hook:"))
-    return { type: "Hook", badge: "bg-cyan-500/15 text-cyan-400" };
-  return { type: "Session", badge: "bg-zinc-500/15 text-muted-foreground" };
+    return { type: "Hook", badge: "bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300" };
+  return { type: "Session", badge: "bg-stone-100 text-stone-600 dark:bg-stone-700/60 dark:text-stone-300" };
 }
 
 export function SessionsView() {

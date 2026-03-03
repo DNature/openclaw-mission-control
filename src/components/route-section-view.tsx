@@ -153,7 +153,7 @@ export type DashboardSection =
   | "help";
 
 function SectionContent({ section }: { section: DashboardSection }) {
-  if (isAgentbayHosting && section === "browser") {
+  if (isAgentbayHosting && (section === "browser" || section === "tailscale")) {
     return <DashboardView />;
   }
 

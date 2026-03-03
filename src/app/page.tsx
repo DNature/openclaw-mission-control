@@ -67,7 +67,7 @@ export default async function Home({
   const section = firstParam(paramsObj.section);
   if (section) {
     const normalizedSection = section.toLowerCase();
-    const targetPath = isAgentbayHosted && normalizedSection === "browser"
+    const targetPath = isAgentbayHosted && (normalizedSection === "browser" || normalizedSection === "tailscale")
       ? "/dashboard"
       : (SECTION_TO_PATH[normalizedSection] || "/dashboard");
     const query = new URLSearchParams();
