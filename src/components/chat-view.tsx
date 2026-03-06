@@ -15,9 +15,7 @@ import {
   Send,
   User,
   RefreshCw,
-  ChevronDown,
   Cpu,
-  Circle,
   Trash2,
   Paperclip,
   X,
@@ -915,9 +913,7 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
   const [modelsLoaded, setModelsLoaded] = useState(false);
-  const [agentDropdownOpen, setAgentDropdownOpen] = useState(false);
   const [now, setNow] = useState(() => Date.now());
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const providerDropdownRef = useRef<HTMLDivElement>(null);
 
   // ── Warm-up state: friendly loading for new users ──
@@ -1036,18 +1032,6 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
   }, [isVisible]);
 
   // When user selects an agent, ensure it's in the mounted set
-  const selectAgent = useCallback((agentId: string) => {
-    setSelectedAgent(agentId);
-    setMountedAgents((prev) => {
-      const next = new Set(prev);
-      next.add(agentId);
-      return next;
-    });
-    setAgentDropdownOpen(false);
-    // Clear unread for this agent since user is looking at it
-    clearUnread(agentId);
-  }, []);
-
   // Mark chat as active when visible
   useEffect(() => {
     setChatActive(isVisible);
@@ -1055,18 +1039,15 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
 
   // Close dropdowns on click outside
   useEffect(() => {
-    if (!agentDropdownOpen && !providerDropdownOpen) return;
+    if (!providerDropdownOpen) return;
     const handleClick = (e: MouseEvent) => {
-      if (agentDropdownOpen && dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setAgentDropdownOpen(false);
-      }
       if (providerDropdownOpen && providerDropdownRef.current && !providerDropdownRef.current.contains(e.target as Node)) {
         setProviderDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, [agentDropdownOpen, providerDropdownOpen]);
+  }, [providerDropdownOpen]);
 
   const currentAgent = useMemo(
     () => agents.find((a) => a.id === selectedAgent),
@@ -1075,86 +1056,18 @@ export function ChatView({ isVisible = true }: { isVisible?: boolean }) {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      {/* ── Top bar: agent selector ─────────────── */}
-      <div className="shrink-0 border-b border-stone-200 bg-stone-50 px-4 py-4 md:px-6 dark:border-stone-700 dark:bg-stone-900">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex min-w-0 flex-wrap items-center gap-3">
-            {/* Agent dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => setAgentDropdownOpen(!agentDropdownOpen)}
-                className={cn(
-                  "flex items-center gap-2.5 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-                  "border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:text-stone-900 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700"
-                )}
-              >
-                <span className="text-xs">
-                  {currentAgent?.emoji || "🤖"}
-                </span>
-                <span className="font-medium">
-                  {currentAgent ? agentDisplayName(currentAgent) : selectedAgent}
-                </span>
-                <ChevronDown className="h-3.5 w-3.5 text-stone-400 dark:text-stone-500" />
-              </button>
-
-              {agentDropdownOpen && (
-                <div className="absolute left-0 top-full z-50 mt-1 min-w-60 overflow-hidden rounded-xl border border-stone-200 bg-white py-1 shadow-xl dark:border-stone-700 dark:bg-stone-800">
-                  {agentsLoading ? (
-                    <div className="px-3 py-2 text-xs text-muted-foreground">
-                      {warmingUp ? "Starting up..." : "Loading agents..."}
-                    </div>
-                  ) : agents.length === 0 ? (
-                    <div className="px-3 py-2 text-xs text-muted-foreground">
-                      No agents available
-                    </div>
-                  ) : (
-                    agents.map((agent) => (
-                      <button
-                        key={agent.id}
-                        type="button"
-                        onClick={() => selectAgent(agent.id)}
-                        className={cn(
-                          "flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors",
-                          agent.id === selectedAgent
-                            ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
-                            : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-700 dark:hover:text-stone-100"
-                        )}
-                      >
-                        <span className="text-xs">
-                          {agent.emoji || "🤖"}
-                        </span>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium">
-                              {agentDisplayName(agent)}
-                            </span>
-                            {agent.lastActive &&
-                              now - agent.lastActive < 300000 && (
-                                <Circle className="h-2 w-2 fill-emerald-400 text-emerald-400" />
-                              )}
-                          </div>
-                          <span className="text-xs text-muted-foreground">
-                            {formatModel(agent.model)}
-                            {agent.sessionCount > 0 && (
-                              <> &bull; {agent.sessionCount} chat{agent.sessionCount !== 1 ? "s" : ""}</>
-                            )}
-                          </span>
-                        </div>
-                        {agent.id === selectedAgent && (
-                          <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                            active
-                          </span>
-                        )}
-                      </button>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
-
-          </div>
-
+      {/* ── Top bar ─────────────── */}
+      <div className="shrink-0 border-b border-stone-200 bg-stone-50 px-4 py-3 md:px-6 dark:border-stone-700 dark:bg-stone-900">
+        <div className="flex items-center gap-2.5">
+          <span className="text-sm">{currentAgent?.emoji || "🤖"}</span>
+          <span className="text-sm font-medium text-stone-700 dark:text-stone-200">
+            {currentAgent ? agentDisplayName(currentAgent) : "Agent"}
+          </span>
+          {currentAgent?.model && currentAgent.model !== "unknown" && (
+            <span className="text-xs text-muted-foreground">
+              {formatModel(currentAgent.model)}
+            </span>
+          )}
         </div>
       </div>
 
